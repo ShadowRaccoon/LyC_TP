@@ -16,7 +16,8 @@ struct struct_tablaSimbolos
 int yystopparser=0;
 FILE  *yyin;
 
-
+int yylex();
+int yyerror();
 extern struct struct_tablaSimbolos tablaSimbolos[1000]; 
 extern int puntero_array;
 int contadorTipos = 0;
@@ -25,6 +26,7 @@ char matrizTipoDato[100][10];
 char matrizVariables[100][10];
 int contadorId = 0;
 int agregarTipoEnTablaSimbolos(char* nombre, int contadorId);
+void validarSintaxisDeclaracion(int, int);
 
 %}
 %token PROGRAM

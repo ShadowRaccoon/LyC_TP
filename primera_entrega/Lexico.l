@@ -17,12 +17,9 @@ FILE *yyin;
 int puntero_array = 0;
 struct struct_tablaSimbolos tablaSimbolos[1000];
 
-
-int yyerror(void);
 void validarCotaEntero(char*);
 void validarCotaReal(char*);
 void validarCotaCaracteres(char*);
-void validarSintaxisDeclaracion(int, int);
 
 int guardarEnTablaSimbolos(char*, char*);
 int escribirEnTablaSimbolos();
@@ -172,7 +169,7 @@ int guardarEnTablaSimbolos(char* tipo, char* nombre){
 	//En caso de ser una CTE string, se cuentan los caracteres y se guardan en la tabla de simbolos
 	if(tablaSimbolos[i].valor[0] == '\"')
 	{
-		itoa(strlen(nombre),longitudConstanteString,10);
+		snprintf(longitudConstanteString, sizeof(longitudConstanteString), "%d", 10);
 		strcpy(tablaSimbolos[i].longitud,longitudConstanteString);
 	}
 	else
