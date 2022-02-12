@@ -1,0 +1,218 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include "y.tab.h"
+
+
+struct struct_tablaSimbolos{
+	char nombre[100];
+	char tipo[100];
+	char valor[50];
+	char longitud[100];
+};
+char buffer[30];
+FILE *yyin;
+int puntero_array = 0;
+struct struct_tablaSimbolos tablaSimbolos[1000];
+
+
+int yyerror(void);
+void validarCotaEntero(char*);
+void validarCotaReal(char*);
+void validarCotaCaracteres(char*);
+void validarSintaxisDeclaracion(int, int);
+
+int guardarEnTablaSimbolos(char*, char*);
+int escribirEnTablaSimbolos();
+%}
+%option noyywrap  
+%option yylineno 
+
+DIGITO			[0-9]
+LETRA			[a-zA-Z]
+ID				{LETRA}({LETRA}|{DIGITO})*
+CTE_ENTERA		-?{DIGITO}+
+CTE_REAL		({DIGITO})*"."({DIGITO})*
+COMILLAS		"\""
+COM_INI			"\*/" 
+COM_FIN			"\/*"
+CARACTERES		({LETRA}|\$|\%|\&|\/|\(|\)|\=|\\|\?)
+ESPACIO			" "
+CTE_STRING		{COMILLAS}({CARACTERES}|{DIGITO}|{ESPACIO})+{COMILLAS}
+COMENTARIO		{COM_INI}({CARACTERES}|{DIGITO}|{ESPACIO})+{COM_FIN}
+COMENTARIOS		{COM_INI}({CARACTERES}|{DIGITO}|{ESPACIO}|{COMENTARIO})+{COM_FIN}
+
+
+
+%%
+"program"		{return PROGRAM;}
+"end"			{ if(escribirEnTablaSimbolos() == 0) printf("Error al crear el archivo de tabla de simbolos\n"); return END;}
+"if"			{ return IF; }
+"then"			{ return THEN;}
+"endif"			{ return ENDIF;}
+"while"			{ return WHILE; }
+"else"			{ return ELSE; }
+"display"		{ return DISPLAY; }
+"get"			{ return GET; }
+"dim"			{ return DIM; } 
+"as"			{ return AS; }
+"=="			{ return COMP_IGUAL; }
+">"				{ return COMP_MAYOR; }
+"<"				{ return COMP_MENOR; }
+">="			{ return COMP_MAYOR_IGUAL; } 
+"<="			{ return COMP_MENOR_IGUAL; }
+"!="			{ return COMP_DISTINTO;}
+":="			{ return OPAR_ASIG;}
+"int"			{ return TIPO_INT;} 
+"float"			{ return TIPO_FLOAT; } 
+"string"		{ return TIPO_STRING; }
+"contar"		{ return CONTAR; }
+{CTE_ENTERA}	{ validarCotaEntero(yytext); guardarEnTablaSimbolos("CTE",yytext); yylval.num = strdup(yytext); return CTE_ENTERA;}
+{CTE_REAL}		{ validarCotaReal(yytext); guardarEnTablaSimbolos("CTE",yytext); yylval.real = strdup(yytext); return CTE_REAL; }
+{CTE_STRING}	{ validarCotaCaracteres(yytext); guardarEnTablaSimbolos("CTE",yytext); yylval.real = strdup(yytext); return CTE_STRING; }
+
+"+"				{ return OP_MAS;  }  
+"-"				{ return OP_MENOS; }
+"*"				{ return OP_MULT; }
+"/"				{ return OP_DIV; }
+"and"			{ return OP_LOG_AND; }
+"or"			{ return OP_LOG_OR; }
+"not"			{ return OP_LOG_NOT; } 
+":"				{ return DOS_PUNTOS; }
+";"				{ return PUN_Y_COM; }
+","				{ return COMA; }
+{ID}			{ validarCotaCaracteres(yytext); guardarEnTablaSimbolos("ID",yytext); yylval.strid = strdup(yytext); return ID; }
+"("				{ return PAR_A; }
+")"				{ return PAR_C; }
+"{"				{ return LLAVE_A; }
+"}"				{ return LLAVE_C; }
+"["				{ return COR_A; }
+"]"				{ return COR_C; }	
+{COMENTARIO}	{ printf("\nComentario que sera descartado:  %s\n",yytext); }
+
+"\n"
+"\t"
+" "
+
+%%
+
+void validarCotaEntero(char* str)
+{
+	int numero = atoi(str);
+	if(numero<=-32768|| numero>=32767)
+	{
+		printf("El valor ingresado para el entero se encuentra fuera del rango valido\n");
+		system("Pause");
+		exit(1);
+	}
+}
+
+
+void validarCotaReal(char* str)
+{
+	float numero = atof(str);
+	if((numero< pow(3.40282,-38)) || (numero > pow(3.40282,38)))
+	{
+		printf("ERROR! El valor ingresado para el entero se encuentra fuera del rango valido\n");
+		system("Pause");
+		exit(1);	
+	}
+}
+
+void validarSintaxisDeclaracion(int cantTipos, int cantVariables)
+{
+	if(cantTipos != cantVariables)
+	{
+		printf("ERROR! Declaracion de variables incorrecta, la cantidad de tipos no coincide con la cantidad de variables\n");
+		system("Pause");
+		exit(1);
+	}
+}
+
+void validarCotaCaracteres(char* str)
+{
+	if(strlen(str)>30)
+	{
+		printf("ERROR! El valor ingresado para la cadena de caracteres se encuentra fuera del rango valido de 30 caracteres\n");
+		system("Pause");
+		exit(1);
+	}
+}
+
+int guardarEnTablaSimbolos(char* tipo, char* nombre){
+	
+	char longitudConstanteString[10];
+	int i;
+	int posicion;
+	char lexema[50]; 
+	lexema[0]='_';
+	lexema[1]='\0';
+	//Se anexa al lexema un guion bajo al inicio
+	strcat(lexema,nombre);
+	
+	//Recorremos la tabla de simbolos y en caso que el lexema ya exista, no se agrega y se retorna su posicion
+	for(i = 0; i < puntero_array; i++)
+	{
+		if(strcmp(tablaSimbolos[i].nombre, lexema) == 0)
+		{
+			return i;
+		}
+	}
+	
+	//En caso de ser una CTE, guardamos el Valor en la tabla de simbolos
+	if(strcmp(tipo,"CTE")==0)
+		strcpy(tablaSimbolos[puntero_array].valor, nombre);
+	else
+		tablaSimbolos[puntero_array].valor[0]='\0';
+		
+	strcpy(tablaSimbolos[puntero_array].nombre, lexema );
+	tablaSimbolos[puntero_array].tipo[0]='\0';
+	//En caso de ser una CTE string, se cuentan los caracteres y se guardan en la tabla de simbolos
+	if(tablaSimbolos[i].valor[0] == '\"')
+	{
+		itoa(strlen(nombre),longitudConstanteString,10);
+		strcpy(tablaSimbolos[i].longitud,longitudConstanteString);
+	}
+	else
+		tablaSimbolos[puntero_array].longitud[0]='\0';
+	
+	//Se agrega en la tabla de simbolos y se retorna su posicion
+	posicion = puntero_array;
+	puntero_array++;
+	
+	return posicion;
+}
+
+int escribirEnTablaSimbolos(){
+	FILE *pf; 
+	int i;
+	pf = fopen("ts.txt","w"); 
+
+	if (!pf)
+	{
+		printf("ERROR! No se pudo crear correctamente el archivo de la tabla de simbolos\n");
+		return 0;
+	}
+
+	fprintf(pf, "Nombre\t\t\tTipo\t\t\tValor\t\t\tLongitud\n");
+	for (i = 0; i < puntero_array; i++)
+		fprintf(pf,"%s\t\t\t%s\t\t\t%s\t\t\t%s\n", tablaSimbolos[i].nombre,tablaSimbolos[i].tipo,tablaSimbolos[i].valor,tablaSimbolos[i].longitud);
+		
+	
+	fclose(pf); 
+
+	return 1;
+}
+
+int yyerror(void)
+{
+	printf("Syntax Error error\n");
+	system ("Pause");
+	exit (1);
+}
+
+
+
+
