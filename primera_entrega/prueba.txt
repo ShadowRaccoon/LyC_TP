@@ -1,5 +1,5 @@
 program
-*/ Asi son los comentarios en 3er Cuatri LyC 2021 /*
+*/ Asi son los comentarios en 3er Cuatri LyC 2021!@# /*
 dim  [int1,int2,float1,cadena,float2] as  [int,int,float,string,float] 
 dim  [float3] as [float]
 
