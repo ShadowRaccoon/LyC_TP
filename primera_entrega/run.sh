@@ -11,4 +11,4 @@ gcc lex.yy.c  y.tab.c -o primera
 rm lex.yy.c
 rm y.tab.c
 rm y.tab.h
-rm comp1
+rm primera
