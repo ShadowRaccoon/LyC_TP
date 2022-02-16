@@ -6,7 +6,7 @@ bison -dyv Sintactico.y
 
 gcc lex.yy.c  y.tab.c -o primera 
 
-./primera Prueba.txt
+./primera prueba.txt
 
 rm lex.yy.c
 rm y.tab.c
