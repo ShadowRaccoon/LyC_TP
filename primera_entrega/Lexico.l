@@ -193,11 +193,14 @@ int escribirEnTablaSimbolos(){
 		return 0;
 	}
 
-	fprintf(pf, "Nombre\t\t\tTipo\t\t\tValor\t\t\tLongitud\n");
+	int ancho_tabla = fprintf(pf, "|%-30s|%-15s|%-32s|%-8s|\n", "Nombre","Tipo","Valor","Longitud");
+	for(i = 0; i < ancho_tabla-1; ++i)
+			fprintf(pf, "-");
+	fprintf(pf, "\n");
 	for (i = 0; i < puntero_array; i++)
-		fprintf(pf,"%s\t\t\t%s\t\t\t%s\t\t\t%s\n", tablaSimbolos[i].nombre,tablaSimbolos[i].tipo,tablaSimbolos[i].valor,tablaSimbolos[i].longitud);
-		
-	
+			fprintf(pf,"|%-30s|%-15s|%-32s|%-8s|\n", tablaSimbolos[i].nombre,tablaSimbolos[i].tipo,tablaSimbolos[i].valor,tablaSimbolos[i].longitud);
+
+
 	fclose(pf); 
 
 	return 1;
