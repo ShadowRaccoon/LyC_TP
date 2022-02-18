@@ -80,8 +80,7 @@ char * str;
 }
 
 %%
-programa:	PROGRAM algoritmo END { printf("\n***** Compilacion exitosa: OK *****\n");}
-			|PROGRAM zona_declaracion algoritmo END { printf("\n***** Compilacion exitosa: OK *****\n");};
+programa: PROGRAM zona_declaracion algoritmo END { printf("\n***** Compilacion exitosa: OK *****\n");};
 				  
 zona_declaracion:	declaraciones;
 
