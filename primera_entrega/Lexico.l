@@ -31,7 +31,7 @@ DIGITO			[0-9]
 LETRA			[a-zA-Z]
 ID				{LETRA}({LETRA}|{DIGITO})*
 CTE_ENTERA		-?{DIGITO}+
-CTE_REAL		({DIGITO})*"."({DIGITO})*
+CTE_REAL		-?({DIGITO})+"."({DIGITO})+
 COMILLAS		"\""
 COM_INI			"\*/" 
 COM_FIN			"\/*"
