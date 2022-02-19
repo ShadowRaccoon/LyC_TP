@@ -169,7 +169,7 @@ int guardarEnTablaSimbolos(char* tipo, char* nombre){
 	//En caso de ser una CTE string, se cuentan los caracteres y se guardan en la tabla de simbolos
 	if(tablaSimbolos[i].valor[0] == '\"')
 	{
-		snprintf(longitudConstanteString, sizeof(longitudConstanteString), "%d", strlen(tablaSimbolos[i].valor - 2));
+		snprintf(longitudConstanteString, sizeof(longitudConstanteString), "%d", strlen(tablaSimbolos[i].valor)-2);
 		strcpy(tablaSimbolos[i].longitud,longitudConstanteString);
 	}
 	else
