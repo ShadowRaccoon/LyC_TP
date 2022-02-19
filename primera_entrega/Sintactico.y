@@ -1,4 +1,4 @@
-%{
+ %{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -173,8 +173,10 @@ int main(int argc,char *argv[])
   else
   {
 	yyparse();
+	escribirEnTablaSimbolos();
   }
   fclose(yyin);
+  system ("Pause");
   return 0;
 }
 
