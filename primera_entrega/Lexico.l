@@ -110,9 +110,9 @@ void validarCotaEntero(char* str)
 void validarCotaReal(char* str)
 {
 	float numero = atof(str);
-	if((numero < pow(3.40282,-38)) || (numero > pow(3.40282,38)))
+	if((numero < pow(1.18,-38)) || (numero > pow(3.4,38)))
 	{
-		printf("ERROR! El valor ingresado para el entero se encuentra fuera del rango valido\n");
+		printf("ERROR! El valor ingresado para el real se encuentra fuera del rango valido\n");
 		system("Pause");
 		exit(1);	
 	}
