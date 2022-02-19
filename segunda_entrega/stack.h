@@ -1,19 +1,19 @@
 #include <stdio.h>
 
-#define STACK_SIZE
+#define STACK_SIZE 1024
 
-typedef Stack{
-    int[1024] array;
-    int i = 0;
-}
+typedef struct Stack{
+    int array[STACK_SIZE];
+    int i;
+}Stack;
 
 void push(Stack*, int);
 int pop(Stack*);
 
-push(Stack* stack, int e){
-    stack[++i] = e;
+void push(Stack* stack, int e){
+    (*stack).array[++(*stack).i] = e;
 }
 
-push(Stack* stack, int e){
-    return stack[i--];
+int por(Stack* stack){
+    return (*stack).array[(*stack).i--];
 }
