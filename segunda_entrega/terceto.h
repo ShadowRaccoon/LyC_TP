@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-
 #define ARRAY_SIZE 1024
 
 typedef struct Terceto{

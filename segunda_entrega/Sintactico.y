@@ -1,4 +1,4 @@
- %{
+%{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,14 +17,14 @@ struct struct_tablaSimbolos
 
 int yystopparser=0;
 FILE  *yyin;
-extern struct Stack pila;
-extern struct ArrayTerceto tercetos;
-int factorIdx, expresionIdx;
 
 int yylex();
 int yyerror();
 extern struct struct_tablaSimbolos tablaSimbolos[1000]; 
 extern int puntero_array;
+extern struct Stack pila;
+extern struct ArrayTerceto tercetos;
+int factorIdx, expresionIdx;
 int contadorTipos = 0;
 char* auxTipoDato;
 char matrizTipoDato[100][10];

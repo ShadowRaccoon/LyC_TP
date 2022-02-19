@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #define STACK_SIZE 1024
 
 typedef struct Stack{
