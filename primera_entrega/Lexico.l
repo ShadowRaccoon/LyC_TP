@@ -31,11 +31,11 @@ DIGITO			[0-9]
 LETRA			[a-zA-Z]
 ID				{LETRA}({LETRA}|{DIGITO})*
 CTE_ENTERA		-?{DIGITO}+
-CTE_REAL		-?({DIGITO})+"."({DIGITO})+
+CTE_REAL		-?({DIGITO})*"."({DIGITO})+
 COMILLAS		"\""
 COM_INI			"\*/" 
 COM_FIN			"\/*"
-CARACTERES		({LETRA}|\$|\%|\&|\/|\(|\)|\=|\\|\?)
+CARACTERES		({LETRA}|\@|\!|\$|\%|\&|\/|\(|\)|\=|\\|\?)
 ESPACIO			" "
 CTE_STRING		{COMILLAS}({CARACTERES}|{DIGITO}|{ESPACIO})+{COMILLAS}
 COMENTARIO		{COM_INI}(.)+{COM_FIN}
@@ -110,7 +110,7 @@ void validarCotaEntero(char* str)
 void validarCotaReal(char* str)
 {
 	float numero = atof(str);
-	if((numero< pow(3.40282,-38)) || (numero > pow(3.40282,38)))
+	if((numero < pow(3.40282,-38)) || (numero > pow(3.40282,38)))
 	{
 		printf("ERROR! El valor ingresado para el entero se encuentra fuera del rango valido\n");
 		system("Pause");
