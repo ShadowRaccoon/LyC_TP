@@ -1,0 +1,17 @@
+|Nombre                        |Tipo           |Valor                           |Longitud|
+------------------------------------------------------------------------------------------
+|_int1                         |int            |                                |        |
+|_int2                         |int            |                                |        |
+|_float1                       |float          |                                |        |
+|_cadena                       |string         |                                |        |
+|_float2                       |float          |                                |        |
+|_float3                       |float          |                                |        |
+|_1                            |               |1                               |        |
+|_2.1                          |               |2.1                             |        |
+|_"Ojala compile"              |               |"Ojala compile"                 |10      |
+|_valorTeclado                 |               |                                |        |
+|_"Condicion verdadera"        |               |"Condicion verdadera"           |10      |
+|_"Condicion falsa"            |               |"Condicion falsa"               |10      |
+|_"Parece que anda"            |               |"Parece que anda"               |10      |
+|_2                            |               |2                               |        |
+|_4                            |               |4                               |        |
