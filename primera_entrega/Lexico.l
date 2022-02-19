@@ -22,7 +22,7 @@ void validarCotaReal(char*);
 void validarCotaCaracteres(char*);
 
 int guardarEnTablaSimbolos(char*, char*);
-int escribirEnTablaSimbolos();
+void escribirEnTablaSimbolos();
 %}
 %option noyywrap  
 %option yylineno 
@@ -44,8 +44,8 @@ COMENTARIOS		{COM_INI}(.)+{COM_FIN}
 
 
 %%
-"program"		{return PROGRAM;}
-"end"			{ if(escribirEnTablaSimbolos() == 0) printf("Error al crear el archivo de tabla de simbolos\n"); return END;}
+"program"		{ return PROGRAM;}
+"end"			{ return END;}
 "if"			{ return IF; }
 "then"			{ return THEN;}
 "endif"			{ return ENDIF;}
@@ -182,15 +182,14 @@ int guardarEnTablaSimbolos(char* tipo, char* nombre){
 	return posicion;
 }
 
-int escribirEnTablaSimbolos(){
+void escribirEnTablaSimbolos(){
 	FILE *pf; 
 	int i;
 	pf = fopen("ts.txt","w"); 
 
-	if (!pf)
+	if (pf == NULL)
 	{
 		printf("ERROR! No se pudo crear correctamente el archivo de la tabla de simbolos\n");
-		return 0;
 	}
 
 	int ancho_tabla = fprintf(pf, "|%-30s|%-15s|%-32s|%-8s|\n", "Nombre","Tipo","Valor","Longitud");
@@ -202,8 +201,6 @@ int escribirEnTablaSimbolos(){
 
 
 	fclose(pf); 
-
-	return 1;
 }
 
 int yyerror(void)
@@ -212,7 +209,3 @@ int yyerror(void)
 	system ("Pause");
 	exit (1);
 }
-
-
-
-
