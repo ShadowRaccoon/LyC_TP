@@ -1,8 +1,10 @@
-%{
+ %{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "y.tab.h"
+#include "terceto.h"
+#include "stack.h"
 
 
 struct struct_tablaSimbolos
@@ -15,6 +17,9 @@ struct struct_tablaSimbolos
 
 int yystopparser=0;
 FILE  *yyin;
+struct Stack pila;
+struct TercetoArray tercetos;
+int factorIdx, expresionIdx;
 
 int yylex();
 int yyerror();
@@ -150,10 +155,10 @@ termino:		termino OP_MULT factor { printf(" factor"); }
 				|factor { printf(" factor"); };
                          
 
-factor:			ID 
-				|CTE_ENTERA 
-				|CTE_REAL 
-				|CTE_STRING 
+factor:			ID {factorIdx = crearTerceto($1, &tercetos);}
+				|CTE_ENTERA {factorIdx = crearTerceto($1, &tercetos);}
+				|CTE_REAL {factorIdx = crearTerceto($1, &tercetos);}
+				|CTE_STRING {factorIdx = crearTerceto($1, &tercetos);}
 				|PAR_A expresion PAR_C;
  
 entrada: 		GET ID;
@@ -173,8 +178,10 @@ int main(int argc,char *argv[])
   else
   {
 	yyparse();
+	escribirEnTablaSimbolos();
   }
   fclose(yyin);
+  system ("Pause");
   return 0;
 }
 
