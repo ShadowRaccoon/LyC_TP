@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "y.tab.h"
-#include "terceto.h"
-#include "stack.h"
 
 
 struct struct_tablaSimbolos
@@ -17,9 +15,6 @@ struct struct_tablaSimbolos
 
 int yystopparser=0;
 FILE  *yyin;
-extern struct Stack pila;
-extern struct ArrayTerceto tercetos;
-int factorIdx, expresionIdx;
 
 int yylex();
 int yyerror();
@@ -32,6 +27,35 @@ char matrizVariables[100][10];
 int contadorId = 0;
 int agregarTipoEnTablaSimbolos(char* nombre, int contadorId);
 void validarSintaxisDeclaracion(int, int);
+
+//Definiciones para generacion de tercetos
+int posicionTerceto = 1;
+int expresionInd = 1;
+int factorInd = 1;
+
+typedef struct{
+    
+    int posicion;
+    char* operador;
+	char* operando1;
+	char* operando2;
+}
+t_terceto;
+
+typedef struct s_nodo_lista_terceto{
+    
+    t_terceto info;
+    struct s_nodo_lista_terceto *siguiente;
+}
+t_nodo_lista_terceto;
+
+typedef t_nodo_lista_terceto *t_lista_terceto;
+t_lista_terceto lista_terceto;
+
+//Funciones para generacion de tercetos
+int crearTerceto(t_lista_terceto *lista_terceto, char *op, char* op1, char* op2);
+void guardarIntermedia(t_lista_terceto *lista_terceto);
+
 
 %}
 %token PROGRAM
@@ -85,23 +109,23 @@ char * str;
 }
 
 %%
-programa: PROGRAM zona_declaracion algoritmo END { printf("\n***** Compilacion exitosa: OK *****\n");};
+programa: PROGRAM zona_declaracion algoritmo END { printf("\n***** Compilacion exitosa: OK *****\n"); guardarIntermedia(&lista_terceto);};
 				  
 zona_declaracion:	declaraciones;
 
 declaraciones:	declaracion
 				|declaraciones declaracion;
 
-declaracion:	DIM { printf("***** Inicio declaracion de variables *****\n"); } COR_A lista_var COR_C  AS COR_A  lista_tipo COR_C{validarSintaxisDeclaracion(contadorTipos,contadorId); printf("*****\n Fin declaracion de variables *****\n");};
+declaracion:	DIM { printf("***** Inicio declaracion de variables *****\n"); } COR_A lista_terceto_var COR_C  AS COR_A  lista_terceto_tipo COR_C{validarSintaxisDeclaracion(contadorTipos,contadorId); printf("*****\n Fin declaracion de variables *****\n");};
 
 
-lista_var:		ID {strcpy(matrizVariables[contadorId],yylval.strid) ;  contadorId++; }
-				| lista_var COMA  ID {strcpy(matrizVariables[contadorId],yylval.strid) ; contadorId++;};
+lista_terceto_var:		ID {strcpy(matrizVariables[contadorId],yylval.strid) ;  contadorId++; }
+				| lista_terceto_var COMA  ID {strcpy(matrizVariables[contadorId],yylval.strid) ; contadorId++;};
 
  
-lista_tipo:		lista_tipo COMA  TIPO_INT { auxTipoDato="int"; strcpy(matrizTipoDato[contadorTipos],auxTipoDato);  agregarTipoEnTablaSimbolos(matrizVariables[contadorTipos],contadorTipos); contadorTipos++; printf(" INT"); }
-				| lista_tipo COMA  TIPO_FLOAT { auxTipoDato="float"; strcpy(matrizTipoDato[contadorTipos],auxTipoDato); agregarTipoEnTablaSimbolos(matrizVariables[contadorTipos],contadorTipos); contadorTipos++; printf(" REAL"); }
-				|lista_tipo COMA  TIPO_STRING { auxTipoDato="string"; strcpy(matrizTipoDato[contadorTipos],auxTipoDato); agregarTipoEnTablaSimbolos(matrizVariables[contadorTipos],contadorTipos); contadorTipos++; printf(" STRING"); }
+lista_terceto_tipo:		lista_terceto_tipo COMA  TIPO_INT { auxTipoDato="int"; strcpy(matrizTipoDato[contadorTipos],auxTipoDato);  agregarTipoEnTablaSimbolos(matrizVariables[contadorTipos],contadorTipos); contadorTipos++; printf(" INT"); }
+				| lista_terceto_tipo COMA  TIPO_FLOAT { auxTipoDato="float"; strcpy(matrizTipoDato[contadorTipos],auxTipoDato); agregarTipoEnTablaSimbolos(matrizVariables[contadorTipos],contadorTipos); contadorTipos++; printf(" REAL"); }
+				|lista_terceto_tipo COMA  TIPO_STRING { auxTipoDato="string"; strcpy(matrizTipoDato[contadorTipos],auxTipoDato); agregarTipoEnTablaSimbolos(matrizVariables[contadorTipos],contadorTipos); contadorTipos++; printf(" STRING"); }
 				| TIPO_INT { auxTipoDato="int"; strcpy(matrizTipoDato[contadorTipos],auxTipoDato); agregarTipoEnTablaSimbolos(matrizVariables[contadorTipos],contadorTipos); contadorTipos++; printf(" INT"); }
 				|TIPO_FLOAT {  auxTipoDato="float"; strcpy(matrizTipoDato[contadorTipos],auxTipoDato); agregarTipoEnTablaSimbolos(matrizVariables[contadorTipos],contadorTipos); contadorTipos++; printf(" REAL"); }
 				|TIPO_STRING { auxTipoDato="string"; strcpy(matrizTipoDato[contadorTipos],auxTipoDato); agregarTipoEnTablaSimbolos(matrizVariables[contadorTipos],contadorTipos); contadorTipos++; printf(" STRING"); };
@@ -132,7 +156,7 @@ condicion:		comparacion
 				|comparacion OP_LOG_OR comparacion	
 				|comparacion OP_LOG_NOT comparacion; 
 
-comparacion:	expresion COMP_IGUAL expresion
+comparacion:	expresion COMP_IGUAL expresion 
 				|expresion COMP_MAYOR expresion	
 				|expresion COMP_MENOR expresion
 				|expresion COMP_MAYOR_IGUAL expresion  
@@ -140,13 +164,13 @@ comparacion:	expresion COMP_IGUAL expresion
 				|expresion COMP_DISTINTO expresion;
 
 
-expresion:		expresion { printf(" expresion"); } OP_MAS termino { printf(" termino"); }
+expresion:		expresion { printf(" expresion"); } OP_MAS termino { printf(" termino"); } 
 				|expresion { printf(" expresion"); }OP_MENOS termino { printf(" termino"); }
 				|termino { printf(" termino"); };
 				  
-contar:			ID OPAR_ASIG CONTAR PAR_A factor PUN_Y_COM COR_A lista_a_contar COR_C PAR_C
+contar:			ID OPAR_ASIG CONTAR PAR_A factor PUN_Y_COM COR_A lista_terceto_a_contar COR_C PAR_C
 
-lista_a_contar:	lista_a_contar COMA factor
+lista_terceto_a_contar:	lista_terceto_a_contar COMA factor
 				| factor
                     ;
 
@@ -155,10 +179,10 @@ termino:		termino OP_MULT factor { printf(" factor"); }
 				|factor { printf(" factor"); };
                          
 
-factor:			ID {factorIdx = crearTerceto(NULL, NULL, $1, &tercetos);}
-				|CTE_ENTERA {factorIdx = crearTerceto(NULL, NULL, $1, &tercetos);}
-				|CTE_REAL {factorIdx = crearTerceto(NULL, NULL, $1, &tercetos);}
-				|CTE_STRING {factorIdx = crearTerceto(NULL, NULL, $1, &tercetos);}
+factor:			ID { factorInd = crearTerceto(&lista_terceto, $1, "", ""); }
+				|CTE_ENTERA { factorInd = crearTerceto(&lista_terceto, $1, "", ""); }
+				|CTE_REAL { factorInd = crearTerceto(&lista_terceto, $1, "", ""); }
+				|CTE_STRING { factorInd = crearTerceto(&lista_terceto, $1, "", ""); }
 				|PAR_A expresion PAR_C;
  
 entrada: 		GET ID;
@@ -210,4 +234,55 @@ int agregarTipoEnTablaSimbolos(char* nombre, int contadorTipos)
 	}
 	
 	return 0;	
+}
+
+//Codigo intermedio
+int crearTerceto(t_lista_terceto *lista_terceto, char *op, char *op1, char *op2){
+    
+    t_nodo_lista_terceto *nuevo = (t_nodo_lista_terceto *)malloc(sizeof (t_nodo_lista_terceto));
+    if (!nuevo)
+        exit(1);
+
+    nuevo->info.operador = (char *)malloc(strlen(op)*sizeof(char));
+    if(!nuevo->info.operador){
+        exit(1);
+    }
+	
+	nuevo->info.operando1 = (char *)malloc(strlen(op1)*sizeof(char));
+    if(!nuevo->info.operando1){
+        exit(1);
+    }
+	
+	nuevo->info.operando2 = (char *)malloc(strlen(op2)*sizeof(char));
+    if(!nuevo->info.operando2){
+        exit(1);
+    }
+
+    strcpy(nuevo->info.operador, op);
+	strcpy(nuevo->info.operando1, op1);
+	strcpy(nuevo->info.operando2, op2);
+    nuevo->info.posicion = posicionTerceto++;
+
+    while (*lista_terceto)
+        lista_terceto = &(*lista_terceto)->siguiente;
+
+    *lista_terceto = nuevo;
+    nuevo->siguiente = NULL;
+}
+
+void guardarIntermedia(t_lista_terceto *lista_terceto){
+    
+  FILE * file = fopen("intermedia.txt", "w");
+  if(file == NULL){
+      printf("ERROR! No se pudo crear correctamente el archivo de codigo intermedio\n");
+  }
+  else{
+      while(*lista_terceto){
+            fprintf(file, "%s ", (*lista_terceto)->info.operador);
+			fprintf(file, "%s ", (*lista_terceto)->info.operando1);
+			fprintf(file, "%s ", (*lista_terceto)->info.operando2);
+            lista_terceto = &(*lista_terceto)->siguiente;
+      }
+    fclose(file);
+  }
 }
