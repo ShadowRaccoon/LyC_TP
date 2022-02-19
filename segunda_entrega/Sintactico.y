@@ -17,8 +17,8 @@ struct struct_tablaSimbolos
 
 int yystopparser=0;
 FILE  *yyin;
-struct Stack pila;
-struct TercetoArray tercetos;
+extern struct Stack pila;
+extern struct ArrayTerceto tercetos;
 int factorIdx, expresionIdx;
 
 int yylex();
@@ -155,10 +155,10 @@ termino:		termino OP_MULT factor { printf(" factor"); }
 				|factor { printf(" factor"); };
                          
 
-factor:			ID {factorIdx = crearTerceto($1, &tercetos);}
-				|CTE_ENTERA {factorIdx = crearTerceto($1, &tercetos);}
-				|CTE_REAL {factorIdx = crearTerceto($1, &tercetos);}
-				|CTE_STRING {factorIdx = crearTerceto($1, &tercetos);}
+factor:			ID {factorIdx = crearTerceto(NULL, NULL, $1, &tercetos);}
+				|CTE_ENTERA {factorIdx = crearTerceto(NULL, NULL, $1, &tercetos);}
+				|CTE_REAL {factorIdx = crearTerceto(NULL, NULL, $1, &tercetos);}
+				|CTE_STRING {factorIdx = crearTerceto(NULL, NULL, $1, &tercetos);}
 				|PAR_A expresion PAR_C;
  
 entrada: 		GET ID;
