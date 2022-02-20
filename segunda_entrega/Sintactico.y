@@ -45,9 +45,9 @@ int comparacionInd = 1;
 typedef struct{
     
     int posicion;
-    char* operador;
-	char* operando1;
-	char* operando2;
+    char operador[3];
+	char operando1[34];
+	char operando2[34];
 }
 t_terceto;
 
@@ -270,21 +270,6 @@ int crearTerceto(t_lista_terceto *lista_terceto, char *op, char *op1, char *op2)
     t_nodo_lista_terceto *nuevo = (t_nodo_lista_terceto *)malloc(sizeof (t_nodo_lista_terceto));
     if (!nuevo)
         exit(1);
-
-    nuevo->info.operador = (char *)malloc(strlen(op)*sizeof(char));
-    if(!nuevo->info.operador){
-        exit(1);
-    }
-	
-	nuevo->info.operando1 = (char *)malloc(strlen(op1)*sizeof(char));
-    if(!nuevo->info.operando1){
-        exit(1);
-    }
-	
-	nuevo->info.operando2 = (char *)malloc(strlen(op2)*sizeof(char));
-    if(!nuevo->info.operando2){
-        exit(1);
-    }
 
     strcpy(nuevo->info.operador, op);
 	strcpy(nuevo->info.operando1, op1);
