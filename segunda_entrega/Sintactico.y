@@ -1,9 +1,9 @@
- %{
+%{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "y.tab.h"
-#include "stack.h";
+//#include "stack.h"
 
 struct struct_tablaSimbolos
 {
@@ -15,6 +15,8 @@ struct struct_tablaSimbolos
 
 int yystopparser=0;
 FILE  *yyin;
+char str_buff[34];
+char str_buff2[34];
 
 int yylex();
 int yyerror();
@@ -39,7 +41,7 @@ int comparacion = 1;
 int listaAContarInd = 1;
 int comparacionInd = 1;
 
-extern struck stack pila;
+//extern struct stack pila;
 typedef struct{
     
     int posicion;
@@ -170,19 +172,38 @@ comparacion:	expresion COMP_IGUAL expresion
 				|expresion COMP_MENOR_IGUAL expresion 
 				|expresion COMP_DISTINTO expresion;
 
-
-expresion:		expresion { printf(" expresion"); } OP_MAS termino { printf(" termino"); expresionInd = creatTerceto(&lista_terceto, $2, terminoInd, factorInd); } 
-				|expresion { printf(" expresion"); }OP_MENOS termino { printf(" termino"); expresionInd = creatTerceto(&lista_terceto, $2, expresionInd, factorInd);}
-				|termino { printf(" termino"); expresionInd = factorInd;};
+expresion:		expresion { printf(" expresion"); } OP_MAS termino { printf(" termino");
+																	 sprintf(str_buff, "%d", expresionInd);
+																	 sprintf(str_buff2, "%d", terminoInd);
+																	 expresionInd = crearTerceto(&lista_terceto, "+", str_buff, str_buff2);
+																	} 
+				|expresion { printf(" expresion"); }OP_MENOS termino { printf(" termino");
+																	 sprintf(str_buff, "%d", expresionInd);
+																	 sprintf(str_buff2, "%d", terminoInd);
+																	 expresionInd = crearTerceto(&lista_terceto, "-", str_buff, str_buff2);
+																	} 
+				|termino { printf(" termino"); expresionInd = terminoInd;};
 				  
 contar:			ID OPAR_ASIG CONTAR PAR_A factor PUN_Y_COM COR_A lista_a_contar COR_C PAR_C;
 
-lista_a_contar:	lista_a_contar COMA factor {listaAContarInd = creatTerceto(&lista_terceto, $2, listaAContarInd, factorInd);}
+lista_a_contar:	lista_a_contar COMA factor { printf(" factor");
+										 sprintf(str_buff, "%d", listaAContarInd);
+										 sprintf(str_buff2, "%d", factorInd);
+										 listaAContarInd = crearTerceto(&lista_terceto, "*", str_buff, str_buff2);
+										}
 				| factor {listaAContarInd = factorInd;}
                     ;
 
-termino:		termino OP_MULT factor { printf(" factor"); terminoInd = creatTerceto(&lista_terceto, $2, terminoInd, factorInd);}
-				|termino OP_DIV factor { printf(" factor"); terminoInd = creatTerceto(&lista_terceto, $2, terminoInd, factorInd);}
+termino:		termino OP_MULT factor { printf(" factor");
+										 sprintf(str_buff, "%d", terminoInd);
+										 sprintf(str_buff2, "%d", factorInd);
+										 terminoInd = crearTerceto(&lista_terceto, "*", str_buff, str_buff2);
+										}
+				|termino OP_DIV factor { printf(" factor");
+										 sprintf(str_buff, "%d", terminoInd);
+										 sprintf(str_buff2, "%d", factorInd);
+										 terminoInd = crearTerceto(&lista_terceto, "/", str_buff, str_buff2);
+										}
 				|factor { printf(" factor"); terminoInd = factorInd;};
                          
 
