@@ -175,12 +175,12 @@ comparacion:	expresion COMP_IGUAL expresion
 expresion:		expresion { printf(" expresion"); } OP_MAS termino { printf(" termino");
 																	 sprintf(&str_buff, "%d", expresionInd);
 																	 sprintf(&str_buff2, "%d", terminoInd);
-																	 expresionInd = crearTerceto(&lista_terceto, "+", &str_buff, &str_buff2);
+																	 expresionInd = crearTerceto(&lista_terceto, "+", str_buff, str_buff2);
 																	} 
 				|expresion { printf(" expresion"); }OP_MENOS termino { printf(" termino");
 																	 sprintf(&str_buff, "%d", expresionInd);
 																	 sprintf(&str_buff2, "%d", terminoInd);
-																	 expresionInd = crearTerceto(&lista_terceto, "-", &str_buff, &str_buff2);
+																	 expresionInd = crearTerceto(&lista_terceto, "-", str_buff, str_buff2);
 																	} 
 				|termino { printf(" termino"); expresionInd = terminoInd;};
 				  
@@ -189,7 +189,7 @@ contar:			ID OPAR_ASIG CONTAR PAR_A factor PUN_Y_COM COR_A lista_a_contar COR_C 
 lista_a_contar:	lista_a_contar COMA factor { printf(" factor");
 										 sprintf(&str_buff, "%d", listaAContarInd);
 										 sprintf(&str_buff2, "%d", factorInd);
-										 listaAContarInd = crearTerceto(&lista_terceto, "*", &str_buff, &str_buff2);
+										 listaAContarInd = crearTerceto(&lista_terceto, "*", str_buff, str_buff2);
 										}
 				| factor {listaAContarInd = factorInd;}
                     ;
@@ -197,12 +197,12 @@ lista_a_contar:	lista_a_contar COMA factor { printf(" factor");
 termino:		termino OP_MULT factor { printf(" factor");
 										 sprintf(&str_buff, "%d", terminoInd);
 										 sprintf(&str_buff2, "%d", factorInd);
-										 terminoInd = crearTerceto(&lista_terceto, "*", &str_buff, &str_buff2);
+										 terminoInd = crearTerceto(&lista_terceto, "*", str_buff, str_buff2);
 										}
 				|termino OP_DIV factor { printf(" factor");
 										 sprintf(&str_buff, "%d", terminoInd);
 										 sprintf(&str_buff2, "%d", factorInd);
-										 terminoInd = crearTerceto(&lista_terceto, "/", &str_buff, &str_buff2);
+										 terminoInd = crearTerceto(&lista_terceto, "/", str_buff, str_buff2);
 										}
 				|factor { printf(" factor"); terminoInd = factorInd;};
                          
